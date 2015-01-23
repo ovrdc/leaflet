@@ -449,7 +449,7 @@
 	    // http://leafletjs.com/reference.html#geojson-style
 	    style: function(feature) {
 	        return {
-	            color: '#00FF00'
+	            color: '#336633'
 	        };
 	    }
 	    });
@@ -491,14 +491,14 @@ var trails = omnivore.geojson('ccreak.geojson', null, greenLayer)
 		"Imagery": Esri_WorldImagery
 	};
 
-  L.control.social({default_text: "An OVRDC Map"}).addTo(map);
+  	L.control.social({default_text: "An OVRDC Map"}).addTo(map);
 	L.control.defaultExtent().addTo(map);
 	L.control.locate().addTo(map);
 	L.control.fullscreen().addTo(map);
 //	L.easyPrint().addTo(map);
 //	L.Control.geocoder().addTo(map);
 //	L.control.search().addTo(map);
-      	L.control.layers(baseMaps, {collapsed:false}).addTo(map);
+      	L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 	// create the ESRI geocoding control and add it to the map
      var searchControl = new L.esri.Controls.Geosearch({
