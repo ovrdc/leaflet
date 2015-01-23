@@ -1,0 +1,525 @@
+<html>
+<head>
+	<title>Most Recent Leaflet Example: Custom Google Styled Map</title>
+	
+	<meta charset="utf-8" />
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<!--Font Awesome CDN and Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<!--Leaflet Core -->
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<!--Home Button ie Default Extent -->
+	<link rel="stylesheet" href="src/leaflet.defaultextent.css" />
+	<script src="src/leaflet.defaultextent.js"></script>
+	<!--Easy Print Plugin Does not work well -->
+	<script src="src/leaflet.easyPrint.js"></script>
+	<link rel="stylesheet" href="src/easyPrint.css" />
+	<script src="src/jQuery.print.js"></script>
+	<!--Locate Control Plugin Mapbox CDN Version -->
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+	<!--[if lt IE 9]>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.21.0/L.Control.Locate.ie.css' rel='stylesheet' />
+	<![endif]-->
+	
+	<!--Awesome Marker Plugin -->
+	<link rel="stylesheet" href="src/leaflet.awesome-markers.css">
+	<script src="src/leaflet.awesome-markers.js"></script>
+	<!--Leaflet Hash -->
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+	<!-- Leafle Social -->	
+	<link rel="stylesheet" href="src/leaflet.social.css" />
+	<script src="src/leaflet.social.js"></script>
+	<!--Google Custom Map with locked personal API -->
+	<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?libraries=placeskey=AIzaSyCpIjH_d3jfNPSwPuyrzy2G9H_Ylb1bEd8">
+	</script>
+	<script src="src/google.js"></script>
+	<!-- Esri Leaflet Core -->
+	<script src="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet-core.js"></script>
+	<!-- Esri Leaflet Geocoder -->
+	<script src="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.3/esri-leaflet-geocoder.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.3/esri-leaflet-geocoder.css">
+	<!-- Full Screen -->
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet' />
+	<!-- Leaflet Omnivore Plugin GeoJson KML Etc -->
+	<script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+	<style>
+	body 
+  	#ovrdc {
+  		position:fixed;
+		top:0px;
+		left:0px;
+		overflow:auto;
+		padding:0px;
+		opacity:0.9;
+		background-color: #F8F8F8;
+  		
+  	}
+  	#share {
+  		position:fixed;
+  		top: 17px;
+  		right: 10px;
+  	}	
+  	#map { position:fixed; top:80px; bottom:0; left:0; right:0;}
+			
+	#legend {
+	      position:absolute;
+	      bottom:40px;
+	      right:0px;
+	      z-index:999;
+	      overflow:auto;
+	      padding:5px;
+	      opacity:0.8;
+	}
+	</style>
+</head>
+<body>
+
+	<div id="map"></div>
+
+  <script>
+  window.onload = function () {
+  
+    	var map = L.map('map', {
+    		center: [39.9, -82.9],
+    		zoom: 13
+    	});
+    	var hash = L.hash(map);
+	var style = [
+	    {
+	        "featureType": "all",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "lightness": "5"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "all",
+	        "elementType": "labels.text.fill",
+	        "stylers": [
+	            {
+	                "color": "#727272"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "all",
+	        "elementType": "labels.text.stroke",
+	        "stylers": [
+	            {
+	                "weight": "-5"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "administrative",
+	        "elementType": "labels.text.fill",
+	        "stylers": [
+	            {
+	                "color": "#9f9f9f"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "administrative.land_parcel",
+	        "elementType": "labels.text.stroke",
+	        "stylers": [
+	            {
+	                "weight": "1.5"
+	            },
+	            {
+	                "lightness": "15"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "landscape",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "color": "#f2f2f2"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "landscape",
+	        "elementType": "geometry.fill",
+	        "stylers": [
+	            {
+	                "lightness": "50"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "poi",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "visibility": "off"
+	            },
+	            {
+	                "saturation": "-30"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "poi",
+	        "elementType": "geometry",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            },
+	            {
+	                "saturation": "-20"
+	            },
+	            {
+	                "lightness": "40"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "poi",
+	        "elementType": "labels",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "poi",
+	        "elementType": "labels.text",
+	        "stylers": [
+	            {
+	                "visibility": "off"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "poi",
+	        "elementType": "labels.icon",
+	        "stylers": [
+	            {
+	                "lightness": "10"
+	            },
+	            {
+	                "saturation": "-100"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "saturation": -100
+	            },
+	            {
+	                "lightness": 45
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.highway",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "visibility": "simplified"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.arterial",
+	        "elementType": "geometry.fill",
+	        "stylers": [
+	            {
+	                "lightness": "-24"
+	            },
+	            {
+	                "gamma": "2.5"
+	            },
+	            {
+	                "saturation": "0"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.arterial",
+	        "elementType": "geometry.stroke",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            },
+	            {
+	                "lightness": "100"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.arterial",
+	        "elementType": "labels.text.fill",
+	        "stylers": [
+	            {
+	                "lightness": "-22"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.arterial",
+	        "elementType": "labels.icon",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.local",
+	        "elementType": "geometry",
+	        "stylers": [
+	            {
+	                "weight": "1.5"
+	            },
+	            {
+	                "lightness": "100"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.local",
+	        "elementType": "geometry.fill",
+	        "stylers": [
+	            {
+	                "weight": "3"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.local",
+	        "elementType": "geometry.stroke",
+	        "stylers": [
+	            {
+	                "visibility": "off"
+	            },
+	            {
+	                "weight": "1.5"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "road.local",
+	        "elementType": "labels.icon",
+	        "stylers": [
+	            {
+	                "visibility": "off"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "transit",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "visibility": "off"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "transit.line",
+	        "elementType": "geometry",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            },
+	            {
+	                "lightness": "30"
+	            },
+	            {
+	                "saturation": "0"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "transit.line",
+	        "elementType": "geometry.stroke",
+	        "stylers": [
+	            {
+	                "weight": "1.5"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "water",
+	        "elementType": "all",
+	        "stylers": [
+	            {
+	                "color": "#b1d9e9"
+	            },
+	            {
+	                "visibility": "on"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "water",
+	        "elementType": "geometry",
+	        "stylers": [
+	            {
+	                "saturation": "-50"
+	            },
+	            {
+	                "lightness": "10"
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "water",
+	        "elementType": "labels.text",
+	        "stylers": [
+	            {
+	                "lightness": "-20"
+	            },
+	            {
+	                "visibility": "on"
+	            },
+	            {
+	                "saturation": "0"
+	            }
+	        ]
+	    },
+	       {
+	        "featureType": "poi.park",
+	        "elementType": "labels.text",
+	        "stylers": [
+	            {
+	                "visibility": "on"
+	            },
+	            {
+	            	"lightness": 25
+	            }
+	        ]
+	    },
+	    {
+	        "featureType": "water",
+	        "elementType": "labels.text.stroke",
+	        "stylers": [
+	            {
+	                "color": "#f0f0f0"
+	            },
+	            {
+	                "weight": "2"
+	            },
+	            {
+	                "visibility": "on"
+	            }
+	        ]
+	    }
+	];
+	var greymap = new L.Google('ROADMAP', {
+		mapOptions: {
+			styles: style
+		},
+		maxZoom: 20,
+		maxNativeZoom: 18
+	});
+	
+	map.addLayer(greymap);
+	
+	var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+    		maxZoom: 20,
+		maxNativeZoom: 18
+	});
+    
+	 var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
+    	attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community', 
+    	    	maxZoom: 20,
+		maxNativeZoom: 18
+    	});
+
+	var greenLayer = L.geoJson(null, {
+	    // http://leafletjs.com/reference.html#geojson-style
+	    style: function(feature) {
+	        return {
+	            color: '#04B431'
+	        };
+	    }
+	    });
+
+//	var greenStyle = {
+//	    "color": "#04B431",
+//	    "weight": 1,
+//	    "opacity": 0.7
+//	};
+	
+	var runLayer = omnivore.geojson('btrail.geojson', null, greenLayer);
+	  
+//	layer.setStyle(greenStyle);
+
+	var overlayMaps = {
+		 "Buckeye Trail": omnivore.geojson('btrail.geojson', null, greenLayer)
+	};
+
+	var baseMaps = {
+		"Gray Basemap": greymap,
+		"Basemap": Esri_WorldTopoMap,
+		"Imagery": Esri_WorldImagery
+	};
+
+  	L.control.social({default_text: "An OVRDC Map"}).addTo(map);
+	L.control.defaultExtent().addTo(map);
+	L.control.locate().addTo(map);
+	L.control.fullscreen().addTo(map);
+//	L.easyPrint().addTo(map);
+//	L.Control.geocoder().addTo(map);
+//	L.control.search().addTo(map);
+      	L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
+
+	// create the ESRI geocoding control and add it to the map
+     var searchControl = new L.esri.Controls.Geosearch({
+     	position: 'topright'
+     }).addTo(map);
+
+  // create an empty layer group to store the results and add it to the map
+  	var results = new L.LayerGroup().addTo(map);
+
+  // listen for the results event and add every result to the map
+      searchControl.on("results", function(data){
+        results.clearLayers();
+        for (var i = data.results.length - 1; i >= 0; i--) {
+          results.addLayer(L.marker(data.results[i].latlng));
+        };
+      });
+     
+
+}
+  </script>
+    </div>
+  	<div id="ovrdc">
+	  	<a href="//www.ovrdc.org"><img src="http://www.googledrive.com/host/0BxoaXnkdoCcyNndfb191dVowMTA/weblogo.png" width="500" height="auto"></a>
+	</div>
+    	<div>
+    		<ul class="share-buttons">
+			<li><a target="_blank" href="http://www.facebook.com/sharer/sharer.php?u=#url">Share</a><i class="fa fa-facebook-square fa-2x"></i></a></li>
+			<li><a href="https://twitter.com/intent/tweet?source=http%3A%2F%2Fovrdc.github.io%2Fleaflet%2Fsocial.html&text=Test:%20http%3A%2F%2Fovrdc.github.io%2Fleaflet%2Fsocial.html" target="_blank" title="Tweet"><i class="fa fa-twitter-square fa-2x"></i></a></li>
+			<li><a href="https://plus.google.com/share?url=http%3A%2F%2Fovrdc.github.io%2Fleaflet%2Fsocial.html" target="_blank" title="Share on Google+"><i class="fa fa-google-plus-square fa-2x"></i></a></li>
+			<li><a href="mailto:?subject=Test&body=test:%20http%3A%2F%2Fovrdc.github.io%2Fleaflet%2Fsocial.html" target="_blank" title="Email"><i class="fa fa-envelope fa-2x"></i></a></li>
+		</ul>
+    	</div>
+    	<div id="legend">
+  		<img src="trails-legend.png" alt="trails" style="width:100px">
+	</div>
+</body>  
+</html>
+
