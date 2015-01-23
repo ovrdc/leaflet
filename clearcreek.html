@@ -88,7 +88,7 @@
   
     	var map = L.map('map', {
     		center: [39.596060, -82.600588],
-    		zoom: 15
+    		zoom: 13
     	});
     	var hash = L.hash(map);
 	var style = [
@@ -458,7 +458,7 @@ var trails = omnivore.geojson('ccreak.geojson', null, greenLayer)
     .on('ready', function() {
         // After the 'ready' event fires, the GeoJSON contents are accessible
         // and you can iterate through layers to bind custom popups.
-        wmainLayer.eachLayer(function(layer) {
+        trails.eachLayer(function(layer) {
             // See the `.bindPopup` documentation for full details. This
             // dataset has a property called `name`: your dataset might not,
             // so inspect it and customize to taste.
