@@ -1,0 +1,214 @@
+<html>
+<head>
+  <title>Leaflet From Scratch</title>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+ 
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="src/leaflet.defaultextent.css" />
+  <script src="src/leaflet.defaultextent.js"></script>
+
+  <link rel="stylesheet" href="src/easyPrint.css" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="src/jQuery.print.js"></script>
+  <script src="src/leaflet.easyPrint.js"></script>
+    
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+	<!--[if lt IE 9]>
+	  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.21.0/L.Control.Locate.ie.css' rel='stylesheet' />
+	<![endif]-->
+  
+  <link rel="stylesheet" href="src/leaflet-sidebar.css" />
+  <script src="src/leaflet-sidebar.js"></script>
+    
+  <link rel="stylesheet" href="src/leaflet.awesome-markers.css">
+  <script src="src/leaflet.awesome-markers.js"></script>
+  
+  <script src="poi.geojson" type="text/javascript"></script>
+  <script src="adamscounty.geojson" type="text/javascript"></script>
+  
+  <link rel="stylesheet" href="src/Control.Geocoder.css" />
+  <script src="src/Control.Geocoder.js"></script>
+  
+  <link rel="stylesheet" href="src/leaflet.groupedlayercontrol.css" />
+  <script src="src/leaflet.groupedlayercontrol.js"></script>
+  
+  <script src"https://raw.githubusercontent.com/yohanboniface/Leaflet.Editable/gh-pages/src/Leaflet.Editable.js"></script>
+
+  <style>
+  	  #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+<style>
+	  body { 
+	  	margin:0;
+	  	}
+	    #header {
+	      position:absolute;
+	      top:0px;
+	      left:60px;
+	      right:0px;
+	      color: #181818 ;
+	      z-index:999;
+	      overflow:auto;
+	      padding:5px;
+	      opacity:0.8;
+	      }
+	     
+</style>
+</head>
+<div id="header">
+    <div class="container">
+        <ul class="list-inline">
+            <h1>Adams County Tourism Map</h1>
+        </ul>  
+    </div>
+</div>
+<body>
+	<div id="sidebar" class="sidebar collapsed">
+	        <!-- Nav tabs -->
+	        <ul class="sidebar-tabs" role="tablist">
+	            <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+	            <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+	        </ul>
+	
+	        <!-- Tab panes -->
+	        <div class="sidebar-content active">
+	            <div class="sidebar-pane" id="home">
+	                <h2>Adams County Tourism Map Test with Leaflet</h2>
+	                <p>This is a Sidebar for <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+	                <p class="lorem">This is a test Leaflet web map. You cloud put a description in here, a link to the data to download, or anything really. I have not yet learned how to put bookmarks to different points in the map in here.</p>
+	            	<p class="lorem">The icons in the map at the right could be anything found <a href="http://fortawesome.github.io/Font-Awesome/icons/">here</a> in a variety of colors. They could be anything really, but this would be the easiest way to style them.</p>
+	            	
+	            </div>
+	            <div class="sidebar-pane" id="settings"><h2>This is just another tab, built with html.</h2></div>
+	        </div>
+	    </div>
+
+  <div id="map" class="sidebar-map"></div>
+  <script>
+  window.onload = function () {
+    var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    });
+    
+    var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
+    	attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community' 
+    	
+    });
+    
+    var map = L.map('map', {center: [38.809365, -83.517054],
+			zoom: 10,
+			layers: [Esri_WorldTopoMap],
+			defaultExtentControl: true,
+			editable: true
+		});
+	
+	function popup(feature, layer) {
+		if (feature.properties && feature.properties.NAME) {
+			layer.bindPopup( '<b>' +feature.properties.NAME + '</b>' + '<br>' +feature.properties.CATEGORY);
+		}
+		else if (feature.properties && feature.properties.CATEGORY) {
+			layer.bindPopup(feature.properties.CATEGORY);
+		}
+	};
+	
+	var starIcon = L.AwesomeMarkers.icon({
+    		prefix: 'fa', //font awesome rather than bootstrap
+    		markerColor: 'red', // see colors above
+		icon: 'star' //http://fortawesome.github.io/Font-Awesome/icons/
+	});
+	var qbarns = L.geoJson(poi,{
+		 filter: function(feature, layer) {
+			return feature.properties.CATEGORY == "Quilt Barns";
+		},
+		pointToLayer: function(feature, latlng) {
+			return L.marker(latlng, {
+				icon: starIcon
+			})
+		},
+		
+	//	pointToLayer: function (feature, latlng) {
+        //    		return L.AwesomeMarkers.icon(latlng, {icon: redMarker})
+	//	}
+		onEachFeature: popup
+	}).addTo(map);
+	
+	qbarns.enableEdit();
+
+	var otherpoi = L.geoJson(poi,{
+		 filter: function(feature, layer) {
+			return feature.properties.CATEGORY != "Quilt Barns";
+		},
+		
+	//	pointToLayer: function (feature, latlng) {
+        //    		return L.AwesomeMarkers.icon(latlng, {icon: redMarker})
+	//	}
+		onEachFeature: popup
+	}).addTo(map);
+
+//	map.fitBounds(poi.getBounds(), {
+//		padding: [50, 50]
+//	});
+	
+	var county = L.geoJson(adamscounty,{
+                color: 'grey',
+                weight: 2,
+                opacity: .7,
+                fill: false
+                //dashArray: '20,15',
+                //lineJoin: 'round'
+	}).addTo(map);
+	
+	var oldmap = L.imageOverlay('map1975-1.jpg', [[38.550974, -83.752114], [39.125732, -83.212542]], {opacity: 0.5})
+    	;
+	
+	var baseMaps = {
+		"Basemap": Esri_WorldTopoMap,
+		"Imagery": Esri_WorldImagery
+	};
+
+//	var overlayMaps = {
+//		 "Quilt Barns": qbarns,
+//		 "Other":	otherpoi,
+//		 "1975 Tourism Map": oldmap
+//	};
+
+	var groupedOverlays = {
+		 "Points of Interest" : {
+		 "Quilt Barns": qbarns,
+		 "Other":	otherpoi
+		 },
+		 "Other": {
+		 "1975 Tourism Map": oldmap
+		 }
+	};
+
+	var sidebar = L.control.sidebar('sidebar').addTo(map);
+
+	L.Control.geocoder().addTo(map);
+	
+//	L.control.layers(baseMaps, overlayMaps, {
+//		collapsed:false,
+//		opacity: .7
+//	}).addTo(map);
+
+	L.control.groupedLayers(baseMaps, groupedOverlays).addTo(map);
+		
+	L.control.locate().addTo(map);
+	
+	//L.easyPrint().addTo(map);
+	
+	//L.control.search().addTo(map);
+	
+
+}
+  </script>
+  </div>
+</body>  
+</html>

@@ -1,0 +1,148 @@
+<html>
+<head>
+  <title>Leaflet From Scratch</title>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <link rel="stylesheet" href="src/leaflet.defaultextent.css" />
+  <link rel="stylesheet" href="src/easyPrint.css" />
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src="src/leaflet.defaultextent.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="src/leaflet.easyPrint.js"></script>
+  <script src="src/jQuery.print.js"></script>
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+<!--[if lt IE 9]>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.21.0/L.Control.Locate.ie.css' rel='stylesheet' />
+<![endif]-->
+  <script src="poi.js" type="text/javascript"></script>
+  <script src="adamscounty.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="src/leaflet-sidebar.css" />
+  <script src="src/leaflet-sidebar.js"></script>
+  <script src="src/leaflet.makimarkers.js"></script>
+  <link rel="stylesheet" href="src/leaflet.awesome-markers.css">
+  <script src="src/leaflet.awesome-markers.js"></script>
+
+  <style>
+  	  #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+
+	<div id="sidebar" class="sidebar collapsed">
+	        <!-- Nav tabs -->
+	        <ul class="sidebar-tabs" role="tablist">
+	            <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+	            <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+	            <li><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+	            <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+	        </ul>
+	
+	        <!-- Tab panes -->
+	        <div class="sidebar-content active">
+	            <div class="sidebar-pane" id="home">
+	                <h1>sidebar-v2</h1>
+	
+	                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+	
+	                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+	
+	                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+	
+	                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+	
+	                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+	            </div>
+	            <div class="sidebar-pane" id="profile"><h1>Profile</h1></div>
+	            <div class="sidebar-pane" id="messages"><h1>Messages</h1></div>
+	            <div class="sidebar-pane" id="settings"><h1>Settings</h1></div>
+	        </div>
+	    </div>
+
+  <div id="map" class="sidebar-map"></div>
+  <script>
+  window.onload = function () {
+    var Esri_WorldTopoMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    });
+    
+    var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { 
+    	attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community' 
+    	
+    });
+    
+    function popup(feature, layer) {
+		if (feature.properties && feature.properties.NAME) {
+			layer.bindPopup( '<b>' +feature.properties.NAME + '</b>' + '<br>' +feature.properties.CATEGORY);
+		}
+		else if (feature.properties && feature.properties.CATEGORY) {
+			layer.bindPopup(feature.properties.CATEGORY);
+		}
+	};
+   
+    var map = L.map('map', {center: [38.809365, -83.517054],
+			zoom: 11,
+			layers: [Esri_WorldTopoMap],
+			defaultExtentControl: true
+		});
+	
+//	var beerIcon = L.MakiMarkers.icon({
+//	 	icon: "beer",
+//		color: "#12a",
+//    		size: "l"
+//	});
+	
+	var redMarker = L.AwesomeMarkers.icon({
+    		icon: 'coffee',
+    		markerColor: 'red'
+  	});
+	
+	var points = L.geoJson(poi,{
+	//	pointToLayer: function (feature, latlng) {
+        //    		return L.AwesomeMarkers.icon(latlng, {icon: redMarker})
+	//	}
+		onEachFeature: popup
+	}).addTo(map);
+
+	//map.fitBounds(points.getBounds());
+	
+	var county = L.geoJson(adamscounty,{
+                color: 'grey',
+                weight: 2,
+                opacity: .7,
+                fill: false
+                //dashArray: '20,15',
+                //lineJoin: 'round'
+	}).addTo(map);
+	
+	var oldmap = L.imageOverlay('map1975-1.jpg', [[38.550974, -83.752114], [39.125732, -83.212542]], {opacity: 0.5})
+    	;
+
+	
+	var baseMaps = {
+		"Basemap": Esri_WorldTopoMap,
+		"Imagery": Esri_WorldImagery
+	};
+
+	var overlayMaps = {
+		 "Points of Interest": points,
+		 "1975 Tourism Map": oldmap
+	};
+	
+	var sidebar = L.control.sidebar('sidebar').addTo(map);
+	L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
+	L.control.locate().addTo(map);
+	L.easyPrint().addTo(map);
+	//L.control.search().addTo(map);
+	
+
+}
+  </script>
+  </div>
+</body>  
+</html>
