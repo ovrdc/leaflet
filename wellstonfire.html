@@ -28,6 +28,8 @@
   <script src="src/Control.Geocoder.js"></script>
   
   <script src="src/mapsheet.js"></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
+
   
 
   <style>
@@ -47,6 +49,7 @@
 
 
 <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
   <div id="map"></div>
 	 <div id="footer">
        		<img src="trails-legend.png" alt="trails" style="width:100px">
@@ -68,8 +71,17 @@
 	var OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
+	
+	var hydrants = 'https://docs.google.com/spreadsheets/d/1rMOHB3AC6lqJNA8i-iJUdVnZGxh4L7MgV-S0MWanZJY/edit?usp=sharing'
 
+ 	var source   = $("#popup-template").html();
+        var template = Handlebars.compile(source);
 
+        // OK, now let's make the map
+        var map = Mapsheet({
+          key: hydrants,
+          element: "map"
+        });
 
 	var baseMaps = {
 		"Gray Basemap": OpenStreetMap_BlackAndWhite,
@@ -87,16 +99,6 @@
 	L.easyPrint().addTo(map);
 //	L.Control.geocoder().addTo(map);
 //	L.control.search().addTo(map);
-
-map.on('click', function(e) {        
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
-        var popLocation= e.latlng;
-        var popup = L.popup()
-        .setLatLng(popLocation)
-        .setContent('<iframe src="' + 'https://docs.google.com/forms/d/14GeNLfqzgvs8Q0THbb4N-UwWgqofwPPnhOMYRXWIw6s/viewform?entry.39165583&entry.674346904=' + e.latlng.lat + '"' + 'width="400" height="600" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen'+ '>' + 'Submit Work Order' + '</iframe>')
-        .openOn(map);        
-    });
 
 //	map.on('click', function(e) { alert('<a href="https://docs.google.com/forms/d/14GeNLfqzgvs8Q0THbb4N-UwWgqofwPPnhOMYRXWIw6s/viewform?entry.39165583&entry.674346904=" + e.latlng.lat>"Submit Work Order"</a>') });
 //	map.on('click', function(e) { alert(e.latlng.lat + ", " + e.latlng.lng) });
